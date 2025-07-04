@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/header/Header";
 import HeaderBottom from "@/components/header/HeaderBottom";
 import Footer from "@/components/Footer";
+import Banner from "@/components/Banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,8 +19,9 @@ export default function Home() {
   return (
     <main>
       
-      <div className="py-10 bg-gray-300">Home Page</div>
-  
+      <div>
+        <Banner/>
+      </div>
     </main>
   );
 }
