@@ -1,8 +1,11 @@
-import type { NextConfig } from "next";
+// next.config.ts
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactStrictMode: true,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true, // Recommended for catching bugs
+  images: {
+    domains: ["links.papareact.com", "fakestoreapi.com"], // Add allowed external image sources
+  },
 };
 
 export default nextConfig;
