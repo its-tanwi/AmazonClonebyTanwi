@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import logo from "../../images/logo.png"
 import Image from "next/image"
 import cartIcon from "../../images/cart.png";
@@ -6,9 +6,35 @@ import { BiCaretDown } from "react-icons/bi";
 import { HiOutlineSearch } from "react-icons/hi";
 import { CiLocationOn } from "react-icons/ci";
 import Link from "next/link";
+import { useDispatch, UseDispatch,useSelector } from "react-redux";
+import { stateProps } from "@/type";
+import { useSession,signIn,signOut} from "next-auth/react";
+import { addUser } from "@/store/nextSlice";
 
 
 const Header = () => {
+    const dispatch=useDispatch();
+    const {productData,favoriteData, userInfo} = useSelector(
+        (state:stateProps)=>state.next);
+        const{data:session}=useSession();
+        console.log(userInfo)
+        useEffect(()=>{
+           if(session)
+        {
+          dispatch(addUser({
+            name:session?.user?.name,
+                email:session?.user?.email,
+                image:session?.user?.image,
+
+
+          })
+        )};
+        },[session]);
+       
+
+
+
+
   return (
     <div className="w-full h-20 bg-amazon_blue  text-lightText sticky top-0 z-50">
      <div className="h-full w-full mx-auto inline-flex items-center justify-between gap-1 mdl:gap-3 px-4">
@@ -37,22 +63,34 @@ const Header = () => {
       </span>
       </div>
       {/*signin*/}
+      {/* Sign-in Section */}
       <div className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%]">
-        <p>Hello signIn</p>
-        <p className="text-white font-bold flex item-center">Accounts & Lists{" "}
-          <span><BiCaretDown/></span>
-        </p>
+        <p>Hello SignIn</p>
+        <p className="text-white fon.t-bold flex item-center">Accounts & Lists{" "}
+          <span><BiCaretDown/></span></p>
       </div>
+
       {/*favourite*/}
-      <div className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%]">
+      <div className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] relative">
         <p>Marked</p>
         <p className="text-white font-bold">&Favourites</p>
+        {
+          favoriteData.length > 0 && (
+                        <span className="absolute right-2 top-2 w-4 h-4
+                        border-[1px] border-gray-400 flex items-center justify-center text-xs
+                        text-amazon_yellow">{favoriteData.length}</span>
+                    )
+
+        }
         </div>
         {/*cart*/}
         <Link href={"/cart"} className="flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] relative">
           <Image className="w-auto object-cover" src={cartIcon} alt="cartImg"/>
           <p className="text-ml text-white font-bold mt-3">Cart</p>
-          <span className="absolute text-amazon_yellow text-sm top-2 left-[30px] font-bold">0</span>
+          <span className="absolute text-amazon_yellow text-sm top-2 left-[30px] font-bold">
+           {productData ? productData.length : 0}
+
+          </span>
         </Link>
 
 
