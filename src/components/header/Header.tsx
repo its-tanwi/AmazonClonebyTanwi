@@ -29,7 +29,7 @@ const Header = () => {
 
           })
         )};
-        },[session]);
+        },[session,dispatch]);
        
 
 
