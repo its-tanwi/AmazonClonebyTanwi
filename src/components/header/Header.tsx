@@ -6,9 +6,9 @@ import { BiCaretDown } from "react-icons/bi";
 import { HiOutlineSearch } from "react-icons/hi";
 import { CiLocationOn } from "react-icons/ci";
 import Link from "next/link";
-import { useDispatch, UseDispatch,useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { stateProps } from "@/type";
-import { useSession,signIn,signOut} from "next-auth/react";
+import { useSession} from "next-auth/react";
 import { addUser } from "@/store/nextSlice";
 
 
