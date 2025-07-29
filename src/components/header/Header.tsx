@@ -8,8 +8,8 @@ import { CiLocationOn } from "react-icons/ci";
 import Link from "next/link";
 import { useDispatch,useSelector } from "react-redux";
 import { stateProps } from "@/type";
-import { useSession} from "next-auth/react";
-import { addUser, setSearchTerm, filterProducts, clearSearch } from "@/store/nextSlice";
+import { useAuth } from "../../hooks/useAuth";
+import { addUser, setSearchTerm, filterProducts, clearSearch, removeUser } from "@/store/nextSlice";
 import { useRouter } from "next/router";
 
 
@@ -17,10 +17,11 @@ const Header = () => {
     const dispatch=useDispatch();
     const router = useRouter();
     const [searchInput, setSearchInput] = useState('');
-    const {productData,favoriteData, userInfo, searchTerm, filteredProducts} = useSelector(
+    const {productData,favoriteData, searchTerm, filteredProducts} = useSelector(
         (state:stateProps)=>state.next);
-        const{data:session}=useSession();
-        console.log(userInfo)
+    
+    // Use Firebase Auth instead of NextAuth
+    const { user, loading, signInWithGoogle, logout } = useAuth();
         
         const handleSearch = () => {
             if (searchInput.trim()) {
@@ -36,18 +37,42 @@ const Header = () => {
             }
         };
 
-        useEffect(()=>{
-           if(session)
-        {
-          dispatch(addUser({
-            name:session?.user?.name,
-                email:session?.user?.email,
-                image:session?.user?.image,
+        const handleSignIn = async () => {
+            try {
+                const user = await signInWithGoogle();
+                if (user) {
+                    dispatch(addUser({
+                        name: user.displayName,
+                        email: user.email,
+                        image: user.photoURL,
+                    }));
+                }
+            } catch (error) {
+                console.error('Sign in error:', error);
+                alert("Sign in failed. Please try again.");
+            }
+        };
 
+        const handleSignOut = async () => {
+            try {
+                await logout();
+                dispatch(removeUser());
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        };
 
-          })
-        )};
-        },[session,dispatch]);
+        useEffect(() => {
+           if (user) {
+                dispatch(addUser({
+                    name: user.displayName,
+                    email: user.email,
+                    image: user.photoURL,
+                }));
+            } else {
+                dispatch(removeUser());
+            }
+        }, [user, dispatch]);
        
 
 
@@ -87,11 +112,48 @@ const Header = () => {
       </div>
       {/*signin*/}
       {/* Sign-in Section */}
-      <div className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%]">
-        <p>Hello SignIn</p>
-        <p className="text-white fon.t-bold flex item-center">Accounts & Lists{" "}
-          <span><BiCaretDown/></span></p>
-      </div>
+      {user ? (
+        <div className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] relative group">
+          <div className="flex items-center gap-2">
+            {user.photoURL && (
+              <Image 
+                src={user.photoURL} 
+                alt="User" 
+                width={24} 
+                height={24} 
+                className="rounded-full"
+              />
+            )}
+            <div className="text-xs">
+              <p className="text-lightText">Hello, {user.displayName?.split(' ')[0]}</p>
+              <p className="text-white font-bold flex items-center">Account & Lists{" "}
+                <span><BiCaretDown/></span></p>
+            </div>
+          </div>
+          {/* Dropdown menu */}
+          <div className="absolute top-full left-0 w-48 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 mt-1">
+            <div className="p-4 border-b">
+              <p className="text-sm font-semibold text-gray-800">{user.displayName}</p>
+              <p className="text-xs text-gray-600">{user.email}</p>
+            </div>
+            <button 
+              onClick={handleSignOut}
+              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div 
+          onClick={handleSignIn}
+          className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%]"
+        >
+          <p className="text-lightText">Hello, Sign In</p>
+          <p className="text-white font-bold flex items-center">Account & Lists{" "}
+            <span><BiCaretDown/></span></p>
+        </div>
+      )}
 
       {/*favourite*/}
       <div className="px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] relative">
