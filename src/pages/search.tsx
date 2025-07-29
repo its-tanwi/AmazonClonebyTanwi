@@ -16,7 +16,7 @@ interface SearchPageProps {
 const SearchPage = ({ allProducts, searchQuery }: SearchPageProps) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { filteredProducts, searchTerm } = useSelector((state: stateProps) => state.next);
+  const { filteredProducts } = useSelector((state: stateProps) => state.next);
 
   useEffect(() => {
     // Set all products in store
@@ -71,7 +71,7 @@ const SearchPage = ({ allProducts, searchQuery }: SearchPageProps) => {
                 No products found
               </h2>
               <p className="text-gray-600 mb-6">
-                We couldn't find any products matching your search. Try different keywords or browse our categories.
+                We couldn&apos;t find any products matching your search. Try different keywords or browse our categories.
               </p>
               <Link 
                 href="/"

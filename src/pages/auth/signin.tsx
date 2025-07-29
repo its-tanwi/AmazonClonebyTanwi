@@ -98,7 +98,7 @@ const SignIn = () => {
 
 // Since we're using Firebase Auth (client-side), we don't need server-side props
 // But we can keep this for consistency or future server-side logic
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // No server-side session check needed with Firebase Auth
   // Firebase handles auth state on the client side
   return {

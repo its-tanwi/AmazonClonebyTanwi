@@ -25,7 +25,6 @@ const Products = ({productData} : Props) =>{
     
     // Component for handling image with fallback
     const ProductImage = ({ src, alt, title }: { src: string; alt: string; title: string }) => {
-        const [imgSrc, setImgSrc] = useState(src);
         const [hasError, setHasError] = useState(false);
         
         const handleError = () => {
@@ -48,7 +47,7 @@ const Products = ({productData} : Props) =>{
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" 
                 width={400} 
                 height={400} 
-                src={imgSrc} 
+                src={src} 
                 alt={alt}
                 onError={handleError}
                 placeholder="blur"

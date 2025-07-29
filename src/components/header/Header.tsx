@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useDispatch,useSelector } from "react-redux";
 import { stateProps } from "@/type";
 import { useAuth } from "../../hooks/useAuth";
-import { addUser, setSearchTerm, filterProducts, clearSearch, removeUser } from "@/store/nextSlice";
+import { addUser, setSearchTerm, filterProducts, removeUser } from "@/store/nextSlice";
 import { useRouter } from "next/router";
 
 
@@ -17,11 +17,11 @@ const Header = () => {
     const dispatch=useDispatch();
     const router = useRouter();
     const [searchInput, setSearchInput] = useState('');
-    const {productData,favoriteData, searchTerm, filteredProducts} = useSelector(
+    const {productData,favoriteData} = useSelector(
         (state:stateProps)=>state.next);
     
     // Use Firebase Auth instead of NextAuth
-    const { user, loading, signInWithGoogle, logout } = useAuth();
+    const { user, signInWithGoogle, logout } = useAuth();
         
         const handleSearch = () => {
             if (searchInput.trim()) {

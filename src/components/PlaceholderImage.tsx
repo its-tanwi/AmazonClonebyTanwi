@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface PlaceholderImageProps {
   title: string;
@@ -31,7 +32,7 @@ const PlaceholderImage: React.FC<PlaceholderImageProps> = ({
   const svgDataUrl = `data:image/svg+xml;base64,${btoa(svgContent)}`;
 
   return (
-    <img 
+    <Image 
       src={svgDataUrl} 
       alt={`${title} - Image not available`}
       className={className}

@@ -15,13 +15,13 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 // Create a noop storage for server-side rendering
 const createNoopStorage = () => {
   return {
-    getItem(_key: string) {
+    getItem() {
       return Promise.resolve(null)
     },
-    setItem(_key: string, value: any) {
-      return Promise.resolve(value)
+    setItem(_key: string, _value: any) {
+      return Promise.resolve(_value)
     },
-    removeItem(_key: string) {
+    removeItem() {
       return Promise.resolve()
     },
   }

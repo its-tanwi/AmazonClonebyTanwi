@@ -1,7 +1,7 @@
 
 import Banner from "@/components/Banner";
 import Products from "@/components/product";
-import { ProductProps, ApiResponse } from "@/type";
+import { ProductProps } from "@/type";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setAllProducts } from "@/store/nextSlice";
