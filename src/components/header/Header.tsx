@@ -99,9 +99,9 @@ const Header = () => {
         <p className="text-white font-bold">&Favourites</p>
         {
           favoriteData.length > 0 && (
-                        <span className="absolute right-2 top-2 w-4 h-4
-                        border-[1px] border-gray-400 flex items-center justify-center text-xs
-                        text-amazon_yellow">{favoriteData.length}</span>
+                        <span className="absolute -right-1 -top-1 w-6 h-6
+                        bg-amazon_yellow border-2 border-amazon_blue rounded-full flex items-center justify-center text-xs
+                        text-amazon_blue font-bold shadow-lg">{favoriteData.length}</span>
                     )
 
         }
@@ -110,10 +110,13 @@ const Header = () => {
         <Link href={"/cart"} className="flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] relative">
           <Image className="w-auto object-cover" src={cartIcon} alt="cartImg"/>
           <p className="text-ml text-white font-bold mt-3">Cart</p>
-          <span className="absolute text-amazon_yellow text-sm top-2 left-[30px] font-bold">
-           {productData ? productData.length : 0}
-
-          </span>
+          {productData && productData.length > 0 && (
+            <span className="absolute -right-1 -top-1 w-6 h-6
+            bg-amazon_yellow border-2 border-amazon_blue rounded-full flex items-center justify-center text-xs
+            text-amazon_blue font-bold shadow-lg animate-pulse">
+              {productData.length}
+            </span>
+          )}
         </Link>
 
 
