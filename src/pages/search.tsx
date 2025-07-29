@@ -1,77 +1,97 @@
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { GetServerSideProps } from 'next';
+import { ProductProps, stateProps } from '@/type';
+import { setAllProducts, setSearchTerm, filterProducts } from '@/store/nextSlice';
+import Products from '@/components/product';
+import Link from 'next/link';
+import { HiArrowLeft } from 'react-icons/hi';
 
-import Banner from "@/components/Banner";
-import Products from "@/components/product";
-import { ProductProps, ApiResponse } from "@/type";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setAllProducts } from "@/store/nextSlice";
-
-interface Props{
-  productData: ProductProps[]
+interface SearchPageProps {
+  allProducts: ProductProps[];
+  searchQuery: string;
 }
 
-
-export default function Home({productData} : Props) {
+const SearchPage = ({ allProducts, searchQuery }: SearchPageProps) => {
   const dispatch = useDispatch();
-  
-  // Populate allProducts store for search functionality
+  const router = useRouter();
+  const { filteredProducts, searchTerm } = useSelector((state: stateProps) => state.next);
+
   useEffect(() => {
-    if (productData && productData.length > 0) {
-      dispatch(setAllProducts(productData.map(product => ({ ...product, quantity: 1 }))));
+    // Set all products in store
+    dispatch(setAllProducts(allProducts.map(product => ({ ...product, quantity: 1 }))));
+    
+    // Set search term and filter
+    if (searchQuery) {
+      dispatch(setSearchTerm(searchQuery));
+      dispatch(filterProducts(searchQuery));
     }
-  }, [productData, dispatch]);
-  
-  console.log(productData)
+  }, [dispatch, allProducts, searchQuery]);
+
+  const handleBackToHome = () => {
+    router.push('/');
+  };
+
   return (
     <main className="min-h-screen bg-gray-100">
-      <div className="relative">
-        <Banner/>
-        {/* Products container with much more negative margin to overlap banner significantly */}
-        <div className="relative -mt-64 z-30">
-          <Products productData={productData}/>
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Header */}
+        <div className="mb-8">
+          <button
+            onClick={handleBackToHome}
+            className="flex items-center gap-2 text-amazon_blue hover:text-amazon_yellow transition-colors mb-4"
+          >
+            <HiArrowLeft className="text-xl" />
+            <span>Back to Home</span>
+          </button>
+          
+          <div className="border-b border-gray-300 pb-4">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Search Results
+            </h1>
+            {searchQuery && (
+              <p className="text-gray-600">
+                {filteredProducts.length > 0 
+                  ? `${filteredProducts.length} results for "${searchQuery}"`
+                  : `No results found for "${searchQuery}"`
+                }
+              </p>
+            )}
+          </div>
         </div>
+
+        {/* Search Results */}
+        {filteredProducts.length > 0 ? (
+          <Products productData={filteredProducts} />
+        ) : (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                No products found
+              </h2>
+              <p className="text-gray-600 mb-6">
+                We couldn't find any products matching your search. Try different keywords or browse our categories.
+              </p>
+              <Link 
+                href="/"
+                className="inline-flex items-center px-6 py-3 bg-amazon_blue text-white rounded-md hover:bg-amazon_yellow hover:text-black transition-colors"
+              >
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
-}
-export const getServerSideProps=async()=>{
-  // Use mock data with working images for now
-  // You can uncomment the API calls later when network issues are resolved
-  
-  /*
-  try {
-    // Try the original fakestoreapi.com first (it has working images)
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-    
-    const res = await fetch("https://fakestoreapi.com/products", {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json',
-      },
-    });
-    
-    clearTimeout(timeoutId);
-    
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    
-    const productData = await res.json();
-    
-    // Check if we received an array of products
-    if (Array.isArray(productData) && productData.length > 0) {
-      return {props: {productData}}
-    } else {
-      throw new Error('Invalid API response or no products found');
-    }
-  } catch (error) {
-    console.error("Failed to fetch from APIs:", error);
-  }
-  */
-  
-  // Use mock data with working images from a reliable CDN
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { q } = context.query;
+  const searchQuery = typeof q === 'string' ? q : '';
+
+  // Use the same mock products from the main page
   const mockProducts: ProductProps[] = [
     {
       id: 1,
@@ -182,10 +202,13 @@ export const getServerSideProps=async()=>{
       brand: "Western Digital"
     }
   ];
-  
+
   return {
     props: {
-      productData: mockProducts
-    }
-  }
-}
+      allProducts: mockProducts,
+      searchQuery,
+    },
+  };
+};
+
+export default SearchPage;

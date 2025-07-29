@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import logo from "../../images/logo.png"
 import Image from "next/image"
 import cartIcon from "../../images/cart.png";
@@ -9,15 +9,33 @@ import Link from "next/link";
 import { useDispatch,useSelector } from "react-redux";
 import { stateProps } from "@/type";
 import { useSession} from "next-auth/react";
-import { addUser } from "@/store/nextSlice";
+import { addUser, setSearchTerm, filterProducts, clearSearch } from "@/store/nextSlice";
+import { useRouter } from "next/router";
 
 
 const Header = () => {
     const dispatch=useDispatch();
-    const {productData,favoriteData, userInfo} = useSelector(
+    const router = useRouter();
+    const [searchInput, setSearchInput] = useState('');
+    const {productData,favoriteData, userInfo, searchTerm, filteredProducts} = useSelector(
         (state:stateProps)=>state.next);
         const{data:session}=useSession();
         console.log(userInfo)
+        
+        const handleSearch = () => {
+            if (searchInput.trim()) {
+                dispatch(setSearchTerm(searchInput));
+                dispatch(filterProducts(searchInput));
+                router.push(`/search?q=${encodeURIComponent(searchInput)}`);
+            }
+        };
+
+        const handleKeyPress = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        };
+
         useEffect(()=>{
            if(session)
         {
@@ -56,9 +74,14 @@ const Header = () => {
         className="w-full h-full rounded-md px-2 placeholder:text-sm text-base text-black bg-white border border-transparent outline-none focus-visible:border-amazon_yellow"
         type="text"
         placeholder="Search amazon products"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onKeyPress={handleKeyPress}
       />
-      <span className="w-12 h-full bg-amazon_yellow text-black text-2xl flex
-                items-center justify-center absolute right-0 rounded-md rounded-br-md">
+      <span 
+        onClick={handleSearch}
+        className="w-12 h-full bg-amazon_yellow text-black text-2xl flex
+                items-center justify-center absolute right-0 rounded-md rounded-br-md cursor-pointer hover:bg-yellow-500 transition-colors">
         <HiOutlineSearch/>
       </span>
       </div>

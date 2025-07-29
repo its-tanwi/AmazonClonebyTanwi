@@ -6,6 +6,8 @@ interface NextState{
     favoriteData:StoreProduct[],
     allProducts:StoreProduct[],
     userInfo: null | string;
+    searchTerm: string;
+    filteredProducts: StoreProduct[];
 }
 
 const initialState:NextState = {
@@ -13,6 +15,8 @@ const initialState:NextState = {
     favoriteData : [],
     allProducts : [],
     userInfo: null,
+    searchTerm: '',
+    filteredProducts: [],
 
 };
 
@@ -79,11 +83,30 @@ export const nextSlice = createSlice({
         setAllProducts: (state,action) => {
             state.allProducts = action.payload;
         },
+        setSearchTerm: (state, action) => {
+            state.searchTerm = action.payload;
+        },
+        filterProducts: (state, action) => {
+            const searchTerm = action.payload.toLowerCase();
+            if (searchTerm === '') {
+                state.filteredProducts = [];
+            } else {
+                state.filteredProducts = state.allProducts.filter(product =>
+                    product.title.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm) ||
+                    (product.brand && product.brand.toLowerCase().includes(searchTerm))
+                );
+            }
+        },
+        clearSearch: (state) => {
+            state.searchTerm = '';
+            state.filteredProducts = [];
+        },
     },
 
 });
 
 export const {addToCart,addToFavorite,increaseQuantity,decreaseQuantity,deleteProduct,
-    resetCart, addUser, removeUser, setAllProducts
+    resetCart, addUser, removeUser, setAllProducts, setSearchTerm, filterProducts, clearSearch
 } = nextSlice.actions;
 export default nextSlice.reducer;

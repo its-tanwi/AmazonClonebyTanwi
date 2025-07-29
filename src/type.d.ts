@@ -25,6 +25,7 @@ export interface StoreProduct{
     category:string;
     image:string;
     quantity:number;
+    brand?:string;
 
     
 }
@@ -34,6 +35,9 @@ export interface stateProps{
     favoriteData: [];
     userInfo: [];
     userInfo: null | string;
+    searchTerm: string;
+    filteredProducts: StoreProduct[];
+    allProducts: StoreProduct[];
     next: any;
 
 }
