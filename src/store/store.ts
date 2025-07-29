@@ -10,16 +10,33 @@ import {
     PURGE,
     REGISTER,
   } from 'redux-persist'
-  import storage from 'redux-persist/lib/storage'
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 
-
-  const persistConfig = {
-    key: 'root',
-    version: 1,
-    storage,
+// Create a noop storage for server-side rendering
+const createNoopStorage = () => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null)
+    },
+    setItem(_key: string, value: any) {
+      return Promise.resolve(value)
+    },
+    removeItem(_key: string) {
+      return Promise.resolve()
+    },
   }
-  
-  const persistedReducer = persistReducer(persistConfig, nextReducer)
+}
+
+// Use noop storage on server, regular storage on client
+const storage = typeof window !== 'undefined' ? createWebStorage('local') : createNoopStorage()
+
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage,
+}
+
+const persistedReducer = persistReducer(persistConfig, nextReducer)
 
 export const store = configureStore({
     reducer: {next:persistedReducer},

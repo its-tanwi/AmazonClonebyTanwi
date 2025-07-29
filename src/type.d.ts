@@ -5,8 +5,16 @@ export interface ProductProps{
     description:string;
     category:string;
     image:string;
+    brand?:string;
+    model?:string;
+    color?:string;
+    discount?:number;
+}
 
-    
+export interface ApiResponse{
+    status: string;
+    message: string;
+    products: ProductProps[];
 }
 
 export interface StoreProduct{
